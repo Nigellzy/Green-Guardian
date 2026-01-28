@@ -1,4 +1,4 @@
-# Green-Guarding Project - Team BigBacks
+# Green-Guardian Project - Team BigBacks
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![Flask](https://img.shields.io/badge/Flask-Web%20Framework-green)
@@ -42,7 +42,7 @@ The **Urban Heat Perception Dashboard** serves as a centralized platform for mon
 ### Steps
 1. **Clone the repository** (if applicable) or navigate to the project folder:
    ```bash
-   cd BigbacksBigplans
+   cd Green-Guardian
    ```
 
 2. **Install Dependencies**:
