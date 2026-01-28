@@ -1,0 +1,18 @@
+# Core Data Processing
+pandas>=2.0.0
+requests>=2.31.0
+
+# Google Gemini AI
+google-genai>=0.1.0
+
+# Geospatial Libraries
+geopandas>=0.14.0
+shapely>=2.0.0
+folium>=0.15.0
+
+# Web Framework
+Flask>=3.0.0
+python-dotenv>=1.0.0
+
+# Markdown Processing
+markdown>=3.5.0
