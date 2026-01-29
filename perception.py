@@ -48,19 +48,13 @@ class DataGovClient:
             return points
             
         try:
-            # V2 API: Wrapper 'data' key contains the actual content
+           
             data = response.get('data', response)
-            
-            # Stations and Readings are often direct siblings in V2 real-time
             stations = data.get('stations', [])
-            
-            # Fallback for V1/Legacy structure (inside metadata)
             if not stations and 'metadata' in data:
                  stations = data['metadata'].get('stations', [])
             
             readings = data.get('readings', [])
-            
-            # Fallback for V1/Legacy structure (inside items)
             if not readings and 'items' in data:
                 items = data['items']
                 if items:
@@ -69,15 +63,12 @@ class DataGovClient:
             if not stations or not readings:
                 return points
 
-            # Flatten logic: check if items in readings have a 'data' key
             actual_readings = []
             if isinstance(readings, list) and readings:
                 first_r = readings[0]
                 if 'data' in first_r and isinstance(first_r['data'], list):
-                     # Case 2: Latest timestamp frame -> use its data list
                      actual_readings = first_r['data']
                 else:
-                    # Case 1: Assume it's already the list of readings
                     actual_readings = readings
 
             reading_map = {}
@@ -150,9 +141,7 @@ class PerceptionAgent:
             if not dataset:
                 continue
             
-            # Determine if it's region-based or station-based
-            # V2 API often wraps everything in 'data', so we check there first.
-            data_block = dataset.get('data', dataset) # Fallback to top level if 'data' key missing
+            data_block = dataset.get('data', dataset)
             
             locations = []
             location_type = None # 'station' or 'region'
@@ -187,31 +176,23 @@ class PerceptionAgent:
                 
                 if not nearest:
                     continue
-                    
-                # 2. Get reading for that location
-                # Readings are often in items[0]['readings']
-                # For V2, sometimes it's directly in data_block['readings']
+                
+                # 2. Extract the relevant reading for this location
                 readings_list = data_block.get('readings', [])
                 if not readings_list:
                     items = data_block.get('items', [])
                     if items:
-                        readings_list = [items[0]['readings']] # Legacy structure adaptation
+                        readings_list = [items[0]['readings']]
                 
                 if not readings_list:
                     continue
                     
                 latest_reading_set = readings_list[0] 
-                # This might be a list of readings (Weather) or a dict of type->regions (PSI)
                 
                 value = None
                 
                 if location_type == 'station':
-                    # Structure: [{'station_id': 'S109', 'value': 28.5}, ...]
-                    # Need to find the reading dict that matches nearest['id']
-                    # latest_reading_set might be the list itself or a dict containing 'data'
-                    
-                    # Inspect structure based on observed V2 API:
-                    # Weather V2: data -> readings -> [ {stationId:..., value:...}, ... ]
+
                     target_readings = latest_reading_set.get('data', latest_reading_set)
                     if isinstance(target_readings, list):
                         for r in target_readings:
@@ -220,14 +201,11 @@ class PerceptionAgent:
                                 break
                                 
                 elif location_type == 'region':
-                    # Structure: {'psi_twenty_four_hourly': {'west': 55, ...}, ...}
-                    # We need to map nearest['name'] (e.g., 'west') to the key
+
                     region_name = nearest.get('name')
-                    
-                    # We pick a primary metric key if multiple exist (e.g. pm25_one_hourly)
-                    # For simplicty, take the first key in the readings dict
+
                     if isinstance(latest_reading_set, dict):
-                        metric_key = next(iter(latest_reading_set)) # e.g. "psi_twenty_four_hourly"
+                        metric_key = next(iter(latest_reading_set)) 
                         region_readings = latest_reading_set[metric_key]
                         value = region_readings.get(region_name)
 
