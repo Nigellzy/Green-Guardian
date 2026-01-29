@@ -20,7 +20,7 @@ class MitigationAgent:
         Generates a strategic district-level assessment.
         """
         prompt = f"""
-        You are an AI Urban Planner for Singapore (URA/HDB).
+        You are an AI Heat Mitigation Strategist for Singapore (URA/HDB).
         
         SITUATION:
         Real-time sensors detect a heat hotspot at **{station_name}** measuring **{temperature}°C**.
